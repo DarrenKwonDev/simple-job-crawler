@@ -27,21 +27,36 @@ def extract_indeed_pages():
 def extract_indeed_jobs(last_page):
     jobs = []
     for page in range(last_page):
+        print(f"Scrapping page: {page}")
         result = requests.get(f"{INDEED_URL}&start={page * LIMIT}")
         soup = BeautifulSoup(result.text, "html.parser")
         results = (soup.find_all("div", class_="jobsearch-SerpJobCard"))
-        print(f"{INDEED_URL}&start={page * LIMIT}")
-        # print(results)
         for result in results:
+            
+            # 제목
             title = result.find("a", class_="jobtitle")["title"]
-            location = result.find("span", class_="location").string
-            if result.find("div", class_="sjcl").find("span", class_="company").string is None:
+
+            # 로케이션 추출
+            pre_location = result.find("span", class_="location")
+            if pre_location is None:
                 break
-            company = result.find("div", class_="sjcl").find("span", class_="company").string.strip()
+            location = pre_location.string
+
+            # 회사 링크 추출
+            pre_link = result["data-jk"]
+            if pre_link is not None:
+                link = f"https://www.indeed.com/viewjob?jk={pre_link}"
+
+            # 회사 추출
+            pre_company = result.find("div", class_="sjcl").find("span", class_="company").string
+            if pre_company is None:
+                break
+            company = pre_company.strip()
             if company is None:
                 company = result.find("div", class_="sjcl").find("span", class_="company").find("a").string.strip()
-            jobs.append({"title": title, "company": company, "location": location})
-            print(jobs)
+
+            # 배열에 추가
+            jobs.append({"title": title, "company": company, "location": location, "link": link})
     return jobs
 
 
