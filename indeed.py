@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
-INDEED_URL = 'https://kr.indeed.com/%EC%B7%A8%EC%97%85?q=python&limit=50'
+LIMIT = 50
+INDEED_URL = f'https://www.indeed.com/jobs?q=python&limit={LIMIT}'
 
 
 def extract_indeed_pages():
@@ -21,3 +22,26 @@ def extract_indeed_pages():
     max_page = max(pages)  # 가장 높은 숫자의 페이지입니다.
 
     return max_page
+
+
+def extract_indeed_jobs(last_page):
+    jobs = []
+    for page in range(last_page):
+        result = requests.get(f"{INDEED_URL}&start={page * LIMIT}")
+        soup = BeautifulSoup(result.text, "html.parser")
+        results = (soup.find_all("div", class_="jobsearch-SerpJobCard"))
+        print(f"{INDEED_URL}&start={page * LIMIT}")
+        # print(results)
+        for result in results:
+            title = result.find("a", class_="jobtitle")["title"]
+            location = result.find("span", class_="location").string
+            if result.find("div", class_="sjcl").find("span", class_="company").string is None:
+                break
+            company = result.find("div", class_="sjcl").find("span", class_="company").string.strip()
+            if company is None:
+                company = result.find("div", class_="sjcl").find("span", class_="company").find("a").string.strip()
+            jobs.append({"title": title, "company": company, "location": location})
+            print(jobs)
+    return jobs
+
+
