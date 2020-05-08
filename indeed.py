@@ -60,3 +60,10 @@ def extract_indeed_jobs(last_page):
     return jobs
 
 
+def get_jobs():
+    max_pages = extract_indeed_pages()
+    indeed_jobs = extract_indeed_jobs(max_pages)
+
+    return indeed_jobs
+
+
