@@ -55,7 +55,7 @@ def extract_stackoverflow_jobs(max_page):
             if pre_link is not None:
                 link = "https://stackoverflow.com/jobs/" + pre_link
 
-            jobs.append({"title": title, "location": location, "company": company, "link": link})
+            jobs.append({"title": title, "company": company,"location": location, "link": link})
 
     return jobs
 
