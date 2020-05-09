@@ -27,12 +27,12 @@ def extract_indeed_pages():
 def extract_indeed_jobs(last_page):
     jobs = []
     for page in range(last_page):
-        print(f"Scrapping page: {page}")
+        print(f"Scrapping indeed page: {page}")
         result = requests.get(f"{INDEED_URL}&start={page * LIMIT}")
         soup = BeautifulSoup(result.text, "html.parser")
         results = (soup.find_all("div", class_="jobsearch-SerpJobCard"))
         for result in results:
-            
+
             # 제목
             title = result.find("a", class_="jobtitle")["title"]
 
@@ -57,10 +57,11 @@ def extract_indeed_jobs(last_page):
 
             # 배열에 추가
             jobs.append({"title": title, "company": company, "location": location, "link": link})
+
     return jobs
 
 
-def get_jobs():
+def get_indeed_jobs():
     max_pages = extract_indeed_pages()
     indeed_jobs = extract_indeed_jobs(max_pages)
 
